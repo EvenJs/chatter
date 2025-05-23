@@ -1,0 +1,23 @@
+# Global node modules
+**/node_modules
+
+# Build outputs
+/chatter-ui/.next
+/chatter-ui/dist
+/backend/dist
+
+# Logs
+**/npm-debug.log*
+**/yarn-debug.log*
+
+# Environment variables
+**/.env*
+.env
+
+# IDE & OS
+.vscode
+.idea
+.DS_Store
+
+# Coverage reports
+**/coverage
