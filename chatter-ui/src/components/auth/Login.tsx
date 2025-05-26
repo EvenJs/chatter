@@ -7,7 +7,6 @@ const Login = () => {
     <Auth submitLabel="Login" onSubmit={async () => {}}>
       <Link to={"signup"} style={{ alignSelf: "center" }}>
         <MUILink>Signup</MUILink>
-        Signup
       </Link>
     </Auth>
   );

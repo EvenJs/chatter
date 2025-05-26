@@ -24,8 +24,6 @@ const App = () => {
         <Container>
           <RouterProvider router={router} />
         </Container>
-        {/* <h1>Dark Mode</h1>
-      <Auth /> */}
       </ThemeProvider>
     </ApolloProvider>
   );
