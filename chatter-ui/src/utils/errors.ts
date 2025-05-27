@@ -1,7 +1,6 @@
 const extractErrorMessage = (err: any) => {
   const errorMessage = err.message;
 
-
   if (Array.isArray(errorMessage)) {
     return formatErrorMessage(errorMessage[0]);
   } else {
