@@ -11,6 +11,6 @@ interface GraphQLContext {
 export class GqlAuthGuard extends AuthGuard('jwt') {
   getRequest(context: ExecutionContext): Request {
     const ctx = GqlExecutionContext.create(context)
-    return ctx.getContext<GraphQLContext>().req;
+    return ctx.getContext().req;
   }
 }
