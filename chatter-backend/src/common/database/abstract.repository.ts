@@ -5,14 +5,19 @@ import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
 export abstract class AbstractRepository<T extends AbstractEntity> {
   protected abstract readonly logger: Logger;
 
-  constructor(protected readonly model: Model<T>) {}
+  constructor(protected readonly model: Model<T>) { }
 
   async create(document: Omit<T, '_id'>): Promise<T> {
-    const createdDocument = new this.model({
-      ...document,
-      _id: new Types.ObjectId(),
-    });
-    return (await createdDocument.save()).toJSON() as unknown as T;
+    try {
+      const createdDocument = new this.model({
+        ...document,
+        _id: new Types.ObjectId(),
+      });
+      return (await createdDocument.save()).toJSON() as unknown as T;
+    }
+    catch (err) {
+      throw new Error(err)
+    }
   }
 
   async findOne(filterQuery: FilterQuery<T>): Promise<T> {

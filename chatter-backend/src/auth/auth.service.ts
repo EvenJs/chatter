@@ -12,7 +12,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async login(user: User, response: Response) {
+  login(user: User, response: Response) {
     const expires = new Date();
     expires.setSeconds(
       expires.getSeconds() + this.configService.getOrThrow('JWT_EXPIRATION')
@@ -25,6 +25,6 @@ export class AuthService {
 
     const token = this.jwtService.sign(tokenPayload)
 
-    response.cookie('Authentication', token, { httpOnly: true, expires })
+    return response.cookie('Authentication', token, { httpOnly: true, expires })
   }
 }
