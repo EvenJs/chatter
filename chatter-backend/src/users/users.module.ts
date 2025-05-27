@@ -10,5 +10,6 @@ import { UserRepository } from './user.repository';
     DatabaseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [UsersResolver, UsersService, UserRepository],
+  exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }
