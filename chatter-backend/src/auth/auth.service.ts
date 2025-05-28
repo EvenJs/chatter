@@ -26,4 +26,11 @@ export class AuthService {
     const token = this.jwtService.sign(tokenPayload)
     response.cookie('Authentication', token, { httpOnly: true, expires })
   }
+
+  logout(response: Response) {
+    response.cookie('Authentication', "", {
+      httpOnly: true,
+      expires: new Date(),
+    });
+  }
 }
