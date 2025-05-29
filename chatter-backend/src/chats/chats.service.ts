@@ -19,15 +19,15 @@ export class ChatsService {
     return this.chatsRepository.find({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chat`;
+  async findOne(_id: string) {
+    return this.chatsRepository.findOne({ _id });
   }
 
-  update(id: number, updateChatInput: UpdateChatInput) {
-    return `This action updates a #${id} chat`;
+  update(_id: string, updateChatInput: UpdateChatInput) {
+    return `This action updates a #${_id} chat`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chat`;
+  remove(_id: string) {
+    return `This action removes a #${_id} chat`;
   }
 }

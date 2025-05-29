@@ -12,7 +12,7 @@ const LogoutLink = onError((error) => {
   }
 })
 
-const httpLink = new HttpLink({ uri: `api/graphql`, })
+const httpLink = new HttpLink({ uri: `/api/graphql`, })
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),

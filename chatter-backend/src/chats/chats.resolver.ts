@@ -22,23 +22,22 @@ export class ChatsResolver {
   }
 
   @Query(() => [Chat], { name: 'chats' })
-  findAll() {
-    const chats = this.chatsService.findAll(); // <- Make sure this is an array
-    return Array.isArray(chats) ? chats : [];
+  async findAll() {
+    return await this.chatsService.findAll();
   }
 
   @Query(() => Chat, { name: 'chat' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.chatsService.findOne(id);
+  async findOne(@Args('_id',) _id: string) {
+    return this.chatsService.findOne(_id);
   }
 
   @Mutation(() => Chat)
   updateChat(@Args('updateChatInput') updateChatInput: UpdateChatInput) {
-    return this.chatsService.update(updateChatInput.id, updateChatInput);
+    return this.chatsService.update(updateChatInput._id, updateChatInput);
   }
 
   @Mutation(() => Chat)
-  removeChat(@Args('id', { type: () => Int }) id: number) {
-    return this.chatsService.remove(id);
+  removeChat(@Args('_id') _id: string) {
+    return this.chatsService.remove(_id);
   }
 }
