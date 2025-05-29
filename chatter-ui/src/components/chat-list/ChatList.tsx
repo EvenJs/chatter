@@ -5,9 +5,12 @@ import ChatListItem from "./ChatListItem";
 import ChatListHeader from "./ChatListHeader";
 import { Stack } from "@mui/material";
 import ChatListAdd from "./ChatListAdd";
+import { useGetChats } from "../../hooks/useGetChats";
 
 const ChatList = () => {
   const [chatListAddVisible, setChatListAddVisible] = useState(false);
+  const { data } = useGetChats();
+
   return (
     <>
       <ChatListAdd
@@ -26,24 +29,9 @@ const ChatList = () => {
             overflowY: "scroll",
           }}
         >
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
-          <ChatListItem />
+          {data?.chats.map((chat) => (
+            <ChatListItem name={chat.name} key={chat._id} />
+          ))}
         </List>
       </Stack>
     </>

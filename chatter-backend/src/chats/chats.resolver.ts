@@ -23,7 +23,8 @@ export class ChatsResolver {
 
   @Query(() => [Chat], { name: 'chats' })
   findAll() {
-    return this.chatsService.findAll();
+    const chats = this.chatsService.findAll(); // <- Make sure this is an array
+    return Array.isArray(chats) ? chats : [];
   }
 
   @Query(() => Chat, { name: 'chat' })

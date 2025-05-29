@@ -47,7 +47,6 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard)
   @Query(() => User, { name: 'me' })
   getMe(@CurrentUser() user: TokenPayload) {
-    console.log(user)
     return user;
   }
 }
