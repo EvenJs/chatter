@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { graphql } from "../gql";
+import { getMessageDocument } from "./useGetMessages";
 
 const createMessageDocument = graphql(`
   mutation CreateMessage($createMessageInput: CreateMessageInput!){
@@ -9,8 +10,32 @@ const createMessageDocument = graphql(`
   }
 `)
 
-const useCreateMessage = () => {
-  return useMutation(createMessageDocument);
+const useCreateMessage = (chatId: string) => {
+  return useMutation(createMessageDocument, {
+    update(cache, { data }) {
+      const messagesQueryOptions = {
+        query: getMessageDocument,
+        variables: {
+          chatId,
+        },
+      }
+
+      const messages = cache.readQuery({
+        ...messagesQueryOptions
+      })
+
+      if (!messages || !data?.createMessage) {
+        return
+      }
+
+      cache.writeQuery({
+        ...messagesQueryOptions,
+        data: {
+          messages: messages.messages.concat(data?.createMessage),
+        }
+      })
+    }
+  });
 };
 
 export { useCreateMessage }

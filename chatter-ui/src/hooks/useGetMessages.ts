@@ -3,7 +3,7 @@ import { graphql } from "../gql";
 import type { MessagesQueryVariables } from "../gql/graphql";
 
 
-const getMessageDocument = graphql(`
+export const getMessageDocument = graphql(`
   query Messages($chatId: String!) {
     messages(chatId: $chatId) {
       ...MessageFragment
