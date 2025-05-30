@@ -1,16 +1,19 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useGetChat } from "../../hooks/useGetChat";
 import {
+  Avatar,
   Box,
   Divider,
+  Grid,
   IconButton,
   InputBase,
   Paper,
   Stack,
+  Typography,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { useCreateMessage } from "../../hooks/useCreateMessage";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGetMessages } from "../../hooks/useGetMessages";
 
 const Chat = () => {
@@ -22,13 +25,51 @@ const Chat = () => {
 
   const { data: messages } = useGetMessages({ chatId });
 
+  const divRef = useRef<HTMLDivElement | null>(null);
+  const location = useLocation();
+
+  const scrollToBottom = () => divRef.current?.scrollIntoView();
+
+  useEffect(() => {
+    setMessage("");
+    scrollToBottom();
+  }, [location, message]);
+
+  const handleCreateMessage = async () => {
+    await createMessage({
+      variables: {
+        createMessageInput: { content: message, chatId: chatId },
+      },
+    });
+
+    setMessage("");
+    scrollToBottom();
+  };
+
   return (
     <Stack sx={{ height: "100%", justifyContent: "space-between" }}>
       <h1>{data?.chat.name}</h1>
-      <Box>
+      <Box sx={{ maxHeight: "70vh", overflow: "auto" }}>
         {messages?.messages.map((message) => (
-          <p>{message.content}</p>
+          <Grid container alignItems="center" marginBottom="1rem">
+            <Grid size={{ xs: 3, md: 1 }}>
+              <Avatar src="" sx={{ width: 52, height: 52 }} />
+            </Grid>
+            <Grid size={{ xs: 9, md: 11 }}>
+              <Stack>
+                <Paper sx={{ width: "fit-content" }}>
+                  <Typography sx={{ padding: "0.9rem" }}>
+                    {message.content}
+                  </Typography>
+                </Paper>
+                <Typography variant="caption" sx={{ marginLeft: "0.25rem" }}>
+                  {new Date(message.createdAt).toLocaleTimeString()}
+                </Typography>
+              </Stack>
+            </Grid>
+          </Grid>
         ))}
+        <div ref={divRef}></div>
       </Box>
       <Paper
         sx={{
@@ -44,18 +85,17 @@ const Chat = () => {
           onChange={(e) => setMessage(e.target.value)}
           value={message}
           placeholder="Message"
+          onKeyDown={async (event) => {
+            if (event.key === "Enter") {
+              await handleCreateMessage();
+            }
+          }}
         />
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
         <IconButton
           color="primary"
           sx={{ p: "10px" }}
-          onClick={() => {
-            createMessage({
-              variables: {
-                createMessageInput: { content: message, chatId: chatId },
-              },
-            });
-          }}
+          onClick={handleCreateMessage}
         >
           <SendIcon />
         </IconButton>
