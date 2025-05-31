@@ -35,20 +35,20 @@ export class MessagesResolver {
 
 
   @Subscription(() => Message, {
-    filter: (payload, variables, context) => {
+    filter: (payload, variables: MessageCreatedArgs, context) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const userId = context.req.user._id;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const message: Message = payload.messageCreated;
       return (
-        payload.messageCreated.chatId === variables.chatId &&
+        variables.chatIds.includes(message.chatId) &&
         userId !== message.user._id.toHexString()
       );
     }
   })
   messageCreated(
-    @Args() messageCreatedArgs: MessageCreatedArgs,
+    @Args() _messageCreatedArgs: MessageCreatedArgs,
   ) {
-    return this.messagesService.messageCreated(messageCreatedArgs);
+    return this.messagesService.messageCreated();
   }
 }
