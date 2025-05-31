@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
 import { ChatsRepository } from './chat.repository';
+import { PipelineStage, Types } from 'mongoose';
 
 @Injectable()
 export class ChatsService {
@@ -11,30 +12,44 @@ export class ChatsService {
     return this.chatsRepository.create({
       ...createChatInput,
       userId,
-      userIds: createChatInput.userIds || [],
       messages: [],
     })
   }
 
-  async findAll(userId: string) {
-    return this.chatsRepository.find({
-      ...this.userChatFilter(userId)
-    });
+  async findMany(prePipelineStages: PipelineStage[] = []) {
+    const chats = await this.chatsRepository.model.aggregate([
+      ...prePipelineStages,
+      { $set: { latestMessage: { $arrayElemAt: ['$messages', -1] } } },
+      { $unset: 'messages' },
+      { $lookup: { from: "users", localField: "latestMessage.userId", foreignField: "_id", as: "latestMessage.user" } },
+    ])
+
+    chats.forEach((chat) => {
+      if (!chat.latestMessage?._id) {
+        delete chat.latestMessage;
+        return
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      chat.latestMessage.user = chat.latestMessage.user[0];
+      delete chat.latestMessage.userId;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      chat.latestMessage.chatId = chat._id;
+    })
+    return chats;
   }
 
   async findOne(_id: string) {
-    return this.chatsRepository.findOne({ _id });
+    const chats = await this.findMany([
+      { $match: { chatId: new Types.ObjectId(_id) } },
+    ])
+
+    if (!chats[0]) {
+      throw new NotFoundException(`No chat was found with ID ${_id}`)
+    }
+
+    return chats[0];
   }
 
-  userChatFilter(userId: string) {
-    return {
-      $or: [
-        { userId },
-        { userIds: { $in: [userId] } },
-        { isPrivate: false },
-      ]
-    }
-  }
 
   update(_id: string, updateChatInput: UpdateChatInput) {
     return `This action updates a #${_id} chat`;
