@@ -40,7 +40,7 @@ export class ChatsService {
 
   async findOne(_id: string) {
     const chats = await this.findMany([
-      { $match: { chatId: new Types.ObjectId(_id) } },
+      { $match: { _id: new Types.ObjectId(_id) } },
     ])
 
     if (!chats[0]) {
