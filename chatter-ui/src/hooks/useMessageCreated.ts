@@ -1,6 +1,7 @@
 import { useSubscription } from "@apollo/client";
 import { graphql } from "../gql";
 import type { SubscriptionMessageCreatedArgs } from "../gql/graphql";
+import { updateMessages } from "../cache/message";
 
 
 const messageCreatedDocument = graphql(`
@@ -15,6 +16,10 @@ export const useMessageCreated = (
   variables: SubscriptionMessageCreatedArgs
 ) => {
   return useSubscription(messageCreatedDocument, {
-    variables
+    variables, onData: ({ client, data }) => {
+      if (data.data) {
+        updateMessages(client.cache, data.data.messageCreated)
+      }
+    }
   });
 }
