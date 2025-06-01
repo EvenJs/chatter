@@ -3,6 +3,8 @@ import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
 import { ChatsRepository } from './chat.repository';
 import { PipelineStage, Types } from 'mongoose';
+import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
+import { skip } from 'node:test';
 
 @Injectable()
 export class ChatsService {
@@ -16,13 +18,40 @@ export class ChatsService {
     })
   }
 
-  async findMany(prePipelineStages: PipelineStage[] = []) {
-    const chats = await this.chatsRepository.model.aggregate([
+  async findMany(prePipelineStages: PipelineStage[] = [], paginationArgs?: PaginationArgs) {
+    const pipeline: PipelineStage[] = [
       ...prePipelineStages,
-      { $set: { latestMessage: { $arrayElemAt: ['$messages', -1] } } },
+      {
+        $set: {
+          latestMessage: {
+            $cond: [
+              '$messages',
+              { $arrayElemAt: ['$messages', -1] },
+              { createdAt: new Date() }
+            ]
+          }
+        }
+      },
+      { $sort: { 'latestMessage.createdAt': -1 } },
       { $unset: 'messages' },
-      { $lookup: { from: "users", localField: "latestMessage.userId", foreignField: "_id", as: "latestMessage.user" } },
-    ])
+      {
+        $lookup: {
+          from: "users",
+          localField: "latestMessage.userId",
+          foreignField: "_id",
+          as: "latestMessage.user"
+        }
+      },
+    ]
+    if (paginationArgs?.skip !== undefined) {
+      pipeline.push({ $skip: paginationArgs.skip });
+    }
+
+    if (paginationArgs?.limit !== undefined) {
+      pipeline.push({ $limit: paginationArgs.limit });
+    }
+
+    const chats = await this.chatsRepository.model.aggregate(pipeline)
 
     chats.forEach((chat) => {
       if (!chat.latestMessage?._id) {
@@ -36,6 +65,10 @@ export class ChatsService {
       chat.latestMessage.chatId = chat._id;
     })
     return chats;
+  }
+
+  async countChats() {
+    return this.chatsRepository.model.countDocuments()
   }
 
   async findOne(_id: string) {
