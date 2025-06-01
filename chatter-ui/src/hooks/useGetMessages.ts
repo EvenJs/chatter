@@ -4,8 +4,8 @@ import type { MessagesQueryVariables } from "../gql/graphql";
 
 
 export const getMessageDocument = graphql(`
-  query Messages($chatId: String!) {
-    messages(chatId: $chatId) {
+  query Messages($chatId: String!, $skip: Int!, $limit: Int!) {
+    messages(chatId: $chatId, skip: $skip, limit: $limit) {
       ...MessageFragment
     }
   }

@@ -37,14 +37,11 @@ const client = new ApolloClient({
         Query: {
           fields: {
             chats: {
-              keyArgs: false, merge(existing = [], incoming, { args }: any) {
-                const merged = existing.slice();
-                for (let i = 0; i < incoming.length; ++i) {
-                  merged[args.skip + i] = incoming[i]
-                }
-                return merged;
-              }
-            }
+              keyArgs: false, merge,
+            },
+            messages: {
+              keyArgs: ["chatId"], merge,
+            },
           }
         }
       }
@@ -52,5 +49,13 @@ const client = new ApolloClient({
   ),
   link: LogoutLink.concat(splitLink)
 })
+
+function merge(existing = [], incoming: [], { args }: any) {
+  const merged = existing.slice();
+  for (let i = 0; i < incoming.length; ++i) {
+    merged[args.skip + i] = incoming[i]
+  }
+  return merged;
+}
 
 export default client;
