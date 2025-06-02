@@ -7,7 +7,6 @@ const Profile = () => {
   const me = useGetMe();
 
   const handleFileUpload = async (event: any) => {
-    console.log(1, event.target.files[0]);
     try {
       const formData = new FormData();
       formData.append("file", event.target.files[0]);
