@@ -48,12 +48,8 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     return document as unknown as T;
   }
 
-  async find(filterQuery: FilterQuery<T>): Promise<T> {
-    return (await this.model.find(
-      filterQuery,
-      {},
-      { lean: true },
-    )) as unknown as T;
+  async find(filterQuery: FilterQuery<T>): Promise<T[]> {
+    return this.model.find(filterQuery);
   }
 
   async findOneAndDelete(filterQuery: FilterQuery<T>): Promise<T> {

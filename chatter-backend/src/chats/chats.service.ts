@@ -5,10 +5,14 @@ import { ChatsRepository } from './chat.repository';
 import { PipelineStage, Types } from 'mongoose';
 import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 import { skip } from 'node:test';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ChatsService {
-  constructor(private readonly chatsRepository: ChatsRepository) { }
+  constructor(
+    private readonly chatsRepository: ChatsRepository,
+    private readonly usersService: UsersService,
+  ) { }
 
   async create(createChatInput: CreateChatInput, userId: string) {
     return this.chatsRepository.create({
@@ -58,8 +62,7 @@ export class ChatsService {
         delete chat.latestMessage;
         return
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      chat.latestMessage.user = chat.latestMessage.user[0];
+      chat.latestMessage.user = this.usersService.toEntity(chat.latestMessage.user[0])
       delete chat.latestMessage.userId;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       chat.latestMessage.chatId = chat._id;

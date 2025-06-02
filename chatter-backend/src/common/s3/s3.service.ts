@@ -35,7 +35,7 @@ export class S3Service {
   }
 
   getObjectUrl(bucket: string, key: string) {
-    return `https//${bucket}.s3.amazonaws.com/${key}`;
+    return `https://${bucket}.s3.amazonaws.com/${key}`;
   }
 
 }
