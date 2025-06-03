@@ -9,6 +9,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useGlobalPipes(new ValidationPipe());
   app.useLogger(app.get(Logger))
+  // Enable CORS
+  app.enableCors({
+    origin: '*', // allow all origins (use specific domain in production)
+    credentials: true, // if you're using cookies or HTTP auth
+  });
   app.use(cookieParser())
   const configService = app.get(ConfigService)
 
