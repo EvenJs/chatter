@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "http://prod.eba-xbaeycjv.ap-southeast-2.elasticbeanstalk.com"
+    }
+  ]
+}
