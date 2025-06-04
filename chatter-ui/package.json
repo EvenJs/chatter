@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run vite\" \"npm run codegen --watch\" ",
     "vite": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
     "codegen": "graphql-codegen --config codegen.ts"
